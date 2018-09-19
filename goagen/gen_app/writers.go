@@ -479,7 +479,7 @@ type {{ .Name }} struct {
 {{ tabs .Depth }}} else {
 {{ tabs .Depth }}	err = goa.MergeErrors(err, goa.InvalidParamTypeError("{{ .Name }}", raw{{ goify .Name true }}, "boolean"))
 {{ tabs .Depth }}}
-{{ end }}{{ if eq .Attribute.Type.Kind 2 }}{{/*
+{{ else if eq .Attribute.Type.Kind 2 }}{{/*
 
 */}}{{/* IntegerType */}}{{/*
 */}}{{ $tmp := tempvar }}{{/*
@@ -491,7 +491,7 @@ type {{ .Name }} struct {
 {{ end }}{{ tabs .Depth }}} else {
 {{ tabs .Depth }}	err = goa.MergeErrors(err, goa.InvalidParamTypeError("{{ .Name }}", raw{{ goify .Name true }}, "integer"))
 {{ tabs .Depth }}}
-{{ end }}{{ if eq .Attribute.Type.Kind 3 }}{{/*
+{{ else if eq .Attribute.Type.Kind 3 }}{{/*
 
 */}}{{/* NumberType */}}{{/*
 */}}{{ $varName := or (and (not .Pointer) .VarName) tempvar }}{{/*
@@ -501,11 +501,11 @@ type {{ .Name }} struct {
 {{ tabs .Depth }}} else {
 {{ tabs .Depth }}	err = goa.MergeErrors(err, goa.InvalidParamTypeError("{{ .Name }}", raw{{ goify .Name true }}, "number"))
 {{ tabs .Depth }}}
-{{ end }}{{ if eq .Attribute.Type.Kind 4 }}{{/*
+{{ else if eq .Attribute.Type.Kind 4 }}{{/*
 
 */}}{{/* StringType */}}{{/*
 */}}{{ tabs .Depth }}{{ .Pkg }} = {{ if .Pointer }}&{{ end }}raw{{ goify .Name true }}
-{{ end }}{{ if eq .Attribute.Type.Kind 5 }}{{/*
+{{ else if eq .Attribute.Type.Kind 5 }}{{/*
 
 */}}{{/* DateTimeType */}}{{/*
 */}}{{ $varName := or (and (not .Pointer) .VarName) tempvar }}{{/*
@@ -515,7 +515,7 @@ type {{ .Name }} struct {
 {{ tabs .Depth }}} else {
 {{ tabs .Depth }}	err = goa.MergeErrors(err, goa.InvalidParamTypeError("{{ .Name }}", raw{{ goify .Name true }}, "datetime"))
 {{ tabs .Depth }}}
-{{ end }}{{ if eq .Attribute.Type.Kind 6 }}{{/*
+{{ else if eq .Attribute.Type.Kind 6 }}{{/*
 
 */}}{{/* UUIDType */}}{{/*
 */}}{{ $varName := or (and (not .Pointer) .VarName) tempvar }}{{/*
@@ -525,13 +525,15 @@ type {{ .Name }} struct {
 {{ tabs .Depth }}} else {
 {{ tabs .Depth }}	err = goa.MergeErrors(err, goa.InvalidParamTypeError("{{ .Name }}", raw{{ goify .Name true }}, "uuid"))
 {{ tabs .Depth }}}
-{{ end }}{{ if eq .Attribute.Type.Kind 7 }}{{/*
+{{ else if eq .Attribute.Type.Kind 7 }}{{/*
 
 */}}{{/* AnyType */}}{{/*
 */}}{{ if .Pointer }}{{ $tmp := tempvar }}{{ tabs .Depth }}{{ $tmp }} := interface{}(raw{{ goify .Name true }})
 {{ tabs .Depth }}{{ .Pkg }} = &{{ $tmp }}
-{{ else }}{{ tabs .Depth }}{{ .Pkg }} = raw{{ goify .Name true }}
-{{ end }}{{ end }}{{ if eq .Attribute.Type.Kind 13 }}{{/*
+{{ else }}{{ tabs .Depth }}{{ .Pkg }} = raw{{ goify .Name true }}{{/*
+*/}}{{ end }}
+{{ tabs .Depth }}}
+{{ else if eq .Attribute.Type.Kind 13 }}{{/*
 
 */}}{{/* FileType */}}{{/*
 */}}{{ tabs .Depth }}if err2 == nil {
