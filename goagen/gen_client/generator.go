@@ -1085,7 +1085,7 @@ func (c *Client) {{ $funcName }}(ctx context.Context, path string{{ if .Params }
 			return nil, err
 		}
 	}
-{{ else }}	{
+{{ else if $att.Type.IsPrimitive }}	{
 		fw, err := w.CreateFormField("{{ $name }}")
 		if err != nil {
 			return nil, err
@@ -1096,6 +1096,17 @@ func (c *Client) {{ $funcName }}(ctx context.Context, path string{{ if .Params }
 			return nil, err
 		}
 	}
+{{ else }}  {
+		tmp_{{ goify $name true }} := payload.{{ goify $name true }}
+		fw, err := w.CreateFormField("{{ $name }}")
+		if err != nil {
+			return nil, err
+		}
+		{{ toString (printf "tmp_%s" (goify $name true)) "s" $att }}
+		if _, err := fw.Write([]byte(s)); err != nil {
+			return nil, err
+		}
+  }
 {{ end }}{{ end }}	if err := w.Close(); err != nil {
 		return nil, err
 	}
